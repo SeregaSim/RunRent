@@ -1,0 +1,60 @@
+﻿@model RunRent.Models.UserLoginViewModel
+
+@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+
+
+<div class="form">
+    <div class="form-toggle"></div>
+    <div class="form-panel one">
+        <div class="form-header">
+            @Html.ValidationSummary(true)
+            @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { @id = "LoginForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Credential, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Credential, new
+                    {
+                        placeholder = "example@gmail.com",
+                        title = "Please enter you username",
+                        value = "",
+                        name = "username",
+                        id = "username",
+                        @class = "form-control"
+                    })
+                    <span class="help-block small">Your unique username to app</span>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Password, new
+                    {
+                        @class = "form-control",
+                        type = "password",
+                        title = "Please enter your password",
+                        placeholder = "******",
+                        value = "",
+                        name = "password",
+                        id = "password",
+                        autocomplete = "off"
+                    })
+                    <span class="help-block small">Your strong password</span>
+                </div>
+
+
+                <button type="submit" class="btn site-btn" value="Index" style="margin-right: 20px">Login</button>
+                <a href="@Url.Action("Register", "Login" )" class="fw-bold text-body">
+                    <span style="text-decoration: underline;">Sign up</span>
+                </a>
+
+
+            }
+        </div>
+    </div>
+    </div>
+
+
+
+  

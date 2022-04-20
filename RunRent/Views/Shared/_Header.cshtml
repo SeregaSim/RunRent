@@ -1,0 +1,36 @@
+﻿@{
+
+    ViewBag.Title = "Index";
+
+}
+<div class="container">
+    <a href="@Url.Action("Index","Home")" class="navbar-brand">
+      Run<span>Rent</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="oi oi-menu"></span> Menu
+    </button>
+
+    <div class="collapse navbar-collapse" id="ftco-nav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index","Home")">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Pricing","Home")">Pricing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Car","Home")">Car</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Contact","Home")">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index","Login")">Log In</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Register","Login")">Sign in</a>
+            </li>
+        </ul>
+    </div>
+</div>

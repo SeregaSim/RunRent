@@ -1,0 +1,44 @@
+﻿@using System.Web.Optimization
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RunRent</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/Content/images/logo2.svg">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons'>
+   
+    @Styles.Render("~/bundles/style/css")
+    @Styles.Render("~/bundles/styleform/css")
+</head>
+
+
+
+  
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        @Html.Partial("_Header")
+    </nav>
+
+
+    <section class="ftco-section ftco-no-pt bg-light">
+        @RenderBody();
+    </section>
+    <footer class="ftco-footer ftco-bg-dark ftco-section">
+        @Html.Partial("_Footer")
+    </footer>
+
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    @Scripts.Render("~/bundles/index/js")
+
+    @Scripts.Render("~/bundles/jquery/js")
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
