@@ -26,5 +26,7 @@ namespace RunRent.Domain.Entities.User
         [StringLength(30)]
         public string Email { get; set; }
 
+        public URole Role { get; set; }
+
     }
 }

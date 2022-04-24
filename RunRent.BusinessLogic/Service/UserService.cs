@@ -1,31 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
-using RunRent.Domain.DBModel;
-using RunRent.Domain.Entities;
+using RunRent.BusinessLogic.Interface;
 using RunRent.Domain.Entities.User;
 using RunRent.Helpers;
+using RunRent.Domain.DBModel;
+using RunRent.Domain.Interfaces;
 
 
-
-
-namespace RunRent.BusinessLogic.Core
+namespace BusinessLogic.Service
 {
-    public class UserApi
+    public class UserService : IUser
     {
+        public IUserRep _userRepository;
 
-        public ULoginResp UserLoginAction(ULoginData data)
+        public UserService(IUserRep userRepository)
+        {
+            this._userRepository = userRepository;
+        }
+
+        public ULoginResp UserLogin(ULoginData userData)
         {
             UDbTable result;
+
             var validate = new EmailAddressAttribute();
-            if (validate.IsValid(data.Credential))
+            if (validate.IsValid(userData.Credential))
             {
-                var pass = LoginHelper.HashGen(data.Password);
+                var password = LoginHelper.HashGen(userData.Password);
                 using (var db = new RunRentDBContext())
                 {
-                    result = db.Users.FirstOrDefault(u => u.Email == data.Credential && u.Password == pass);
+                    result = db.Users.FirstOrDefault(u => u.Email == userData.Credential && u.Password == userData.Password);
                 }
 
                 if (result == null)
@@ -43,10 +52,10 @@ namespace RunRent.BusinessLogic.Core
             }
             else
             {
-                var pass = LoginHelper.HashGen(data.Password);
+                var password = LoginHelper.HashGen(userData.Password);
                 using (var db = new RunRentDBContext())
                 {
-                    result = db.Users.FirstOrDefault(u => u.Username == data.Credential && u.Password == pass);
+                    result = db.Users.FirstOrDefault(u => u.Username == userData.Credential && u.Password == password);
                 }
 
                 if (result == null)
@@ -64,7 +73,7 @@ namespace RunRent.BusinessLogic.Core
             }
         }
 
-        internal HttpCookie Cookie(string loginCredential)
+        public HttpCookie Cookie(string loginCredential)
         {
             var apiCookie = new HttpCookie("X-KEY")
             {
@@ -73,27 +82,26 @@ namespace RunRent.BusinessLogic.Core
 
             using (var db = new RunRentDBContext())
             {
-                Session curent;
+                Session current;
                 var validate = new EmailAddressAttribute();
                 if (validate.IsValid(loginCredential))
                 {
-                    curent = (from e in db.Sessions where e.Username == loginCredential select e).FirstOrDefault();
+                    current = (from e in db.Sessions where e.Username == loginCredential select e).FirstOrDefault();
                 }
                 else
                 {
-                    curent = (from e in db.Sessions where e.Username == loginCredential select e).FirstOrDefault();
+                    current = (from e in db.Sessions where e.Username == loginCredential select e).FirstOrDefault();
                 }
 
-                if (curent != null)
+                if (current != null)
                 {
-                    curent.CookieString = apiCookie.Value;
-                    curent.ExpireTime = DateTime.Now.AddMinutes(60);
+                    current.CookieString = apiCookie.Value;
+                    current.ExpireTime = DateTime.Now.AddMinutes(60);
                     using (var todo = new RunRentDBContext())
                     {
-                        todo.Entry(curent).State = EntityState.Modified;
+                        todo.Entry(current).State = EntityState.Modified;
                         todo.SaveChanges();
-                    };
-                    
+                    }
                 }
                 else
                 {
@@ -110,10 +118,10 @@ namespace RunRent.BusinessLogic.Core
             return apiCookie;
         }
 
-        internal UserMinimal UserCookie(string cookie)
+        public UserMinimal UserCookie(string cookie)
         {
             Session session;
-            UDbTable curentUser;
+            UDbTable currentUser;
 
             using (var db = new RunRentDBContext())
             {
@@ -126,32 +134,37 @@ namespace RunRent.BusinessLogic.Core
                 var validate = new EmailAddressAttribute();
                 if (validate.IsValid(session.Username))
                 {
-                    curentUser = db.Users.FirstOrDefault(u => u.Email == session.Username);
+                    currentUser = db.Users.FirstOrDefault(u => u.Email == session.Username);
                 }
                 else
                 {
-                    curentUser = db.Users.FirstOrDefault(u => u.Username == session.Username);
+                    currentUser = db.Users.FirstOrDefault(u => u.Username == session.Username);
                 }
             }
 
-            if (curentUser == null) return null;
-            //Mapper.Initialize(cfg => cfg.CreateMap<UDbTable, UserMinimal>());
+            if (currentUser == null) return null;
 
-            var userminimal = new UserMinimal(); 
-            userminimal.Username = curentUser.Username;
-            userminimal.Email = curentUser.Email;
 
-            //var userminimal = Mapper.Map<UserMinimal>(curentUser);
+            var userMinimal = new UserMinimal();
 
-            return userminimal;
+            userMinimal.Username = currentUser.Username;
+            userMinimal.Email = currentUser.Email;
+            userMinimal.Role = currentUser.Role;
+
+            return userMinimal;
         }
+
         public void UserRegister(UDbTable user)
         {
             var foundUser = new UDbTable();
             using (var db = new RunRentDBContext())
             {
-                foundUser = db.Users.FirstOrDefault(u => u.Id == user.Id);
+                foundUser = db.Users.FirstOrDefault(u => u.Email == user.Email);
             }
+
+
+            var password = LoginHelper.HashGen(user.Password);
+            user.Password = password;
 
             if (foundUser == null)
             {
@@ -165,6 +178,16 @@ namespace RunRent.BusinessLogic.Core
             {
                 throw new Exception();
             }
+        }
+
+        public IEnumerable<UDbTable> GetAllUsers()
+        {
+            return _userRepository.GetAllUsers();
+        }
+
+        public UDbTable GetUserById(int id)
+        {
+            return _userRepository.GetUserById(id);
         }
     }
 }

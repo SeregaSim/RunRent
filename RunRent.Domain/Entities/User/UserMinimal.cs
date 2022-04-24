@@ -12,5 +12,6 @@ namespace RunRent.Domain.Entities.User
         public int Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
+        public URole Role { get; set; }
     }
 }
